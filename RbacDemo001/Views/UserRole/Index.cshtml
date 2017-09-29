@@ -1,0 +1,78 @@
+﻿@model IEnumerable<RbacDemo001.Models.User>
+@{
+    ViewBag.Title = "角色模块管理";
+}
+
+<a id="create" href="#">新增</a>
+<table>
+    <tr>
+        <th>用户名称</th>
+        <th>角色名称</th>
+        <th>操作</th>
+    </tr>
+    @foreach (var user in Model)
+    {
+        foreach (var role in user.Roles)
+        {
+            <tr>
+                <td>@user.Username</td>
+                <td>@role.Name</td>
+                <td style="width: 100px;">
+                    <a class="edit" href="@Url.Action("Edit", new {userId = user.Id, roleId = role.Id})">编辑</a>
+                    @Html.ActionLink("删除", "Delete", new { userId = user.Id, roleId = role.Id }, new {@class = "Delete"})
+                </td>
+            </tr>
+        }
+
+    }
+
+</table>
+
+
+@section Script
+{
+    <script>
+        $("#create").click(function (event) {
+            event.preventDefault();
+        layer.open({
+            type: 2,
+            title: '用户角色-新增',
+            shadeClose: true,
+            shade: false,
+            area: ['500px', '400px'],
+            content: '@Url.Action("Creat")'
+        });
+    });
+
+    $(".edit").click(function (event) {
+        var $that = $(this);
+        layer.open({
+            type: 2,
+            title: '用户管理-编辑',
+            shadeClose: true,
+            shade: false,
+            area: ['500px', '400px'],
+            content:$that.attr("href")
+        });
+        event.preventDefault();
+    });
+
+        $(".Delete").click(function(event) {
+            event.preventDefault();
+
+            var href = $(this).attr("href");
+            $.ajax({
+                url: href,
+                type: "post",
+                success: function(res) {
+                    if (res.code === 200) {
+                        window.location.reload();
+                    } else {
+                        alert("删除失败");
+                    }
+                }
+            });
+        });
+    </script>
+}
+
